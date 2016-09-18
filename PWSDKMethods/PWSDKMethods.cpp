@@ -59,5 +59,7 @@ extern "C" __declspec(dllexport) BOOL CheckIn(char* UserName, char* UserPassword
 		valid = aaApi_CheckInDocument(ProjectID, DocumentID);
 
 	return valid;
+
+	//return true;
 }
 
