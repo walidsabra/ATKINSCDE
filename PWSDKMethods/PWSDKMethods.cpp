@@ -30,11 +30,17 @@ using namespace std;
 
 //aaApi_Login
 //aaApi_CheckInDocument
-extern "C" __declspec(dllexport) BOOL CheckIn(char* UserName, char* UserPassword, char* DSName, int ProjectID, int DocumentID)
+extern "C" __declspec(dllexport) BOOL CreatePWFile(char* UserName, char* UserPassword, char* DSName, int ProjectID, int DocumentID)
 {
+	//char* UserName, char* UserPassword, char* DSName,
+
+	UserName = "admin";
+	UserPassword = "admin";
+	DSName = "DCH CDE";
+
 	LONG validLogin = 0;
 	BOOL valid = false;
-	BOOL init = aaApi_Initialize(AAMODULE_ALL);
+	//BOOL init = aaApi_Initialize(AAMODULE_ALL);
 
 	// User Name
 	WCHAR  userName[200];
@@ -51,15 +57,15 @@ extern "C" __declspec(dllexport) BOOL CheckIn(char* UserName, char* UserPassword
 	MultiByteToWideChar(0, 0, DSName, 200, dsName, 200);
 	LPCWSTR  DS_Name = dsName;
 
-	validLogin = aaApi_Login(AAAPIDB_UNKNOWN, DS_Name, User_Name, User_Password, NULL);
+	//validLogin = aaApi_Login(AAAPIDB_UNKNOWN, DS_Name, User_Name, User_Password, NULL);
 
-	if (validLogin == 0)
-		MessageBoxA(NULL, "User Login Failed", "ATKINS CDE", MB_OK);
-	else if (validLogin == 1)
-		valid = aaApi_CheckInDocument(ProjectID, DocumentID);
+	//if (validLogin == 0)
+	//	MessageBoxA(NULL, "User Login Failed", "ATKINS CDE", MB_OK);
+	//else if (validLogin == 1)
+	//	valid = aaApi_CheckInDocument(ProjectID, DocumentID);
 
-	return valid;
-
-	//return true;
+	return true;
+	//ProjectID + DocumentID
+	//return ProjectID + DocumentID;
 }
 

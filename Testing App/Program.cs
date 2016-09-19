@@ -10,11 +10,12 @@ namespace Testing_App
     class Program
     {
         [DllImport("PWSDKMethods.dll")]
-        public static extern bool CheckIn(int ProjectID, int DocumentID);
+        public static extern bool CreatePWFile(int ProjectID, int DocumentID);
+
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Good Morning ... Let's Test the App");
+            Console.WriteLine("... Let's Test the App ...");
             Console.WriteLine("Enter your ProjectWise User Name");
             var UserName = Console.ReadLine();
 
@@ -22,7 +23,10 @@ namespace Testing_App
             var Password = Console.ReadLine();
 
             Console.WriteLine("User Name Is: " + UserName  +  " And password is: " +  Password);
-            bool Test  = CheckIn(50, 1);
+            bool Test = CreatePWFile(2, 1);
+ 
+
+            Console.WriteLine(Test);
             Console.ReadLine();
         }
     }
