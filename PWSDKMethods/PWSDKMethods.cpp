@@ -23,7 +23,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define DLLEXPORT __declspec( dllexport )
+//#define DLLEXPORT __declspec( dllexport )
 #define WINAPI __stdcall
 
 using namespace std;
@@ -40,22 +40,22 @@ extern "C" __declspec(dllexport) BOOL CreatePWFile(char* UserName, char* UserPas
 
 	LONG validLogin = 0;
 	BOOL valid = false;
-	//BOOL init = aaApi_Initialize(AAMODULE_ALL);
+	BOOL init = aaApi_Initialize(AAMODULE_ALL);
 
-	// User Name
-	WCHAR  userName[200];
-	MultiByteToWideChar(0, 0, UserName, 200, userName, 200);
-	LPCWSTR  User_Name = userName;
+	//// User Name
+	//WCHAR  userName[200];
+	//MultiByteToWideChar(0, 0, UserName, 200, userName, 200);
+	//LPCWSTR  User_Name = userName;
 
-	// User Password
-	WCHAR  userPassword[200];
-	MultiByteToWideChar(0, 0, UserPassword, 200, userPassword, 200);
-	LPCWSTR  User_Password = userPassword;
+	//// User Password
+	//WCHAR  userPassword[200];
+	//MultiByteToWideChar(0, 0, UserPassword, 200, userPassword, 200);
+	//LPCWSTR  User_Password = userPassword;
 
-	// Current DataSource
-	WCHAR  dsName[200];
-	MultiByteToWideChar(0, 0, DSName, 200, dsName, 200);
-	LPCWSTR  DS_Name = dsName;
+	//// Current DataSource
+	//WCHAR  dsName[200];
+	//MultiByteToWideChar(0, 0, DSName, 200, dsName, 200);
+	//LPCWSTR  DS_Name = dsName;
 
 	//validLogin = aaApi_Login(AAAPIDB_UNKNOWN, DS_Name, User_Name, User_Password, NULL);
 
