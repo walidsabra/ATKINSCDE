@@ -10,57 +10,9 @@ namespace Testing_App
 {
     class Program
     {
-        //[DllImport("PWSDKMethods.dll")]
-        //public static extern bool CreatePWFile();
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll")]
-        public static extern bool aaApi_Initialize(uint ulModule);
-
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll")]
-        public static extern int aaApi_GetLastErrorId(IntPtr A);
-
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll", CharSet = CharSet.Unicode)]
-        public static extern bool aaApi_Login(int IDsType, String DSName, String UserName, String password, String schema);
-
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll", CharSet = CharSet.Unicode)]
-        public static extern bool aaApi_CreateDocument(
-            int plDocumentId, 
-            int lProjectId, 
-            int lStorageId, 
-            int lFileType, 
-            int lItemType, 
-            int lApplicationId, 
-            int lDepartmentId, 
-            int lWorkspaceProfileId, 
-            String lpctstrSourceFile, 
-            String lpctstrFileName, 
-            String lpctstrName, 
-            String lpctstrDesc, 
-            String lpctstrVersion, 
-            bool bLeaveOut, 
-            uint ulFlags, 
-            StringBuilder lptstrWorkingFile, 
-            int lBufferSize, 
-            int plAttributeId);
-
-
-
-
-        
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll", CharSet = CharSet.Unicode)]
-        public static extern int aaApi_SelectDocumentsByProjectId(int lProjectId);
-
-                
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr aaApi_GetDocumentStringProperty(int lPropertyId, int index);
-
-        [DllImport("c:\\Program Files\\Bentley\\ProjectWise\\bin\\dmscli.dll", CharSet = CharSet.Unicode)]
-        private static extern int aaApi_GetDocumentNumericProperty(int lPropertyId, int index);
-
-
-
-
         static void Main(string[] args)
         {
+            xmlHelper.readxml();
             Console.WriteLine("... Let's Test the App ...");
             Console.WriteLine("Enter your ProjectWise User Name");
             var UserName = Console.ReadLine();
@@ -72,8 +24,8 @@ namespace Testing_App
             //bool Test = CreatePWFile();
 
             //Login to ProjectWise
-            bool Initialized = aaApi_Initialize(0);
-            bool validLogin = aaApi_Login(0, "DCH CDE", "admin", "admin", null);
+            bool Initialized = PWMethods.aaApi_Initialize(0);
+            bool validLogin = PWMethods.aaApi_Login(0, "DCH CDE", "admin", "admin", null);
 
             Console.WriteLine("Initialized:" + Initialized);
             Console.WriteLine("validLogin" + validLogin);
@@ -90,7 +42,7 @@ namespace Testing_App
             DirectoryInfo d = new DirectoryInfo(filepath);
 
             //Select files (all general attributes) within PW Folder
-            int selected = aaApi_SelectDocumentsByProjectId(PWFolderId);
+            int selected = PWMethods.aaApi_SelectDocumentsByProjectId(PWFolderId);
             Console.WriteLine("Selected?: " + selected);
 
             //Loop on file in Staging Folder 
@@ -105,9 +57,11 @@ namespace Testing_App
 
                 for (int i = 0; i < selected; i++)
                 {
-                    string documentFileName = Marshal.PtrToStringUni(aaApi_GetDocumentStringProperty(21, i));
-                    int docSequence = aaApi_GetDocumentNumericProperty(2, i);
-                    string docVersion = Marshal.PtrToStringUni(aaApi_GetDocumentStringProperty(23, i));
+                    int docSequence = PWMethods.aaApi_GetDocumentNumericProperty(2, i);
+                    int docId = PWMethods.aaApi_GetDocumentNumericProperty(1, i);
+
+                    string documentFileName = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(21, i));
+                    string docVersion = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(23, i));
 
                     if (documentFileName == ofileName)
                     {
@@ -115,11 +69,15 @@ namespace Testing_App
                         //Change PW file State to Archived
 
                         //creat new Revision here
+                        PWMethods.aaApi_NewDocumentVersion(0, PWFolderId, docId, 0,"Version created by automation tool",0);
+                        
+                        //Change Document File
+                        PWMethods.aaApi_ChangeDocumentFile(PWFolderId, docId, ofilePath);
                     }
                     else
                     {
                         //Else - Create New 
-                        bool test4 = aaApi_CreateDocument(0, PWFolderId, 0, 0, 0, 0, 0, 0, ofilePath, ofileName, oName, null, null, false, 0, null, 1000, 0);
+                        bool test4 = PWMethods.aaApi_CreateDocument(0, PWFolderId, 0, 0, 0, 0, 0, 0, ofilePath, ofileName, oName, null, null, false, 0, null, 1000, 0);
                         //bool test4 = aaApi_CreateDocument(0, 282, 0, 0, 0, 0, 0, 0, "D:\\PWTEST\\PWSDK.docx", "PWSDK.docx", "Test 4 from App", null, null, false, 0, null, 1000, 0);
                         if (test4)
                         {
