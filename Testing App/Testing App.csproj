@@ -64,6 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="backupCode.cs" />
+    <Compile Include="classes\otherConfig.cs" />
+    <Compile Include="classes\dsInfo.cs" />
+    <Compile Include="classes\FolderMapping.cs" />
+    <Compile Include="classes\wfObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PWMethods.cs" />
@@ -75,6 +79,7 @@
   <ItemGroup>
     <Content Include="configurations\config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
