@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Testing_App.classes
+namespace CDEAutomation.classes
 {
     class otherConfig
     {

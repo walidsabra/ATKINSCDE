@@ -4,13 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Testing_App.classes;
+using CDEAutomation.classes;
 
-namespace Testing_App
+namespace CDEAutomation
 {
     class xmlHelper
     {
-
+        /// <summary>
+        /// Get WF Section from xml
+        /// </summary>
+        /// <returns></returns>
         public static wfObject getWFConfigs()
         {
             wfObject WFObj = new wfObject();
@@ -28,6 +31,10 @@ namespace Testing_App
             return WFObj;
         }
 
+        /// <summary>
+        /// Get True/False for P drive and emails.
+        /// </summary>
+        /// <returns></returns>
         public static otherConfig getAppConfigs()
         {
             otherConfig myappconfig = new otherConfig();

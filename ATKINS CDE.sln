@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PWSDKMethods", "PWSDKMethods\PWSDKMethods.vcxproj", "{E5F72824-672B-4006-9380-53F55B888FFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing App", "Testing App\Testing App.csproj", "{3E78D0DF-3435-48AB-A35E-5BDA3A672419}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDE Automation Tool", "Testing App\CDE Automation Tool.csproj", "{3E78D0DF-3435-48AB-A35E-5BDA3A672419}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

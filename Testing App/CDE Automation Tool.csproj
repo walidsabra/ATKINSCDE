@@ -7,8 +7,8 @@
     <ProjectGuid>{3E78D0DF-3435-48AB-A35E-5BDA3A672419}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Testing_App</RootNamespace>
-    <AssemblyName>Testing App</AssemblyName>
+    <RootNamespace>CDEAutomation</RootNamespace>
+    <AssemblyName>CDE Automation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="appMethods.cs" />
     <Compile Include="backupCode.cs" />
     <Compile Include="classes\otherConfig.cs" />
     <Compile Include="classes\dsInfo.cs" />
