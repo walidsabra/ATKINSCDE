@@ -225,8 +225,6 @@
 	<table name="AppSearch">
 		<col key="yes" def="s72">Property</col>
 		<col key="yes" def="s72">Signature_</col>
-		<row><td>DATABASEDIR</td><td>NewSignature2</td></row>
-		<row><td>INSTALLDIR</td><td>NewSignature1</td></row>
 	</table>
 
 	<table name="BBControl">
@@ -1150,7 +1148,7 @@
 		<row><td>CommonAppDataFolder</td><td>TARGETDIR</td><td>.:Common~1|CommonAppData</td><td/><td>0</td><td/></row>
 		<row><td>CommonFiles64Folder</td><td>TARGETDIR</td><td>.:Common64</td><td/><td>0</td><td/></row>
 		<row><td>CommonFilesFolder</td><td>TARGETDIR</td><td>.:Common</td><td/><td>0</td><td/></row>
-		<row><td>DATABASEDIR</td><td>SendToFolder</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>DATABASEDIR</td><td>CDE_AUTOMATION</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>DIRPROPERTY1</td><td>TARGETDIR</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>DIRPROPERTY10</td><td>TARGETDIR</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>DIRPROPERTY11</td><td>TARGETDIR</td><td>.</td><td/><td>0</td><td/></row>
@@ -1169,7 +1167,7 @@
 		<row><td>FavoritesFolder</td><td>TARGETDIR</td><td>.:FAVORI~1|Favorites</td><td/><td>0</td><td/></row>
 		<row><td>FontsFolder</td><td>TARGETDIR</td><td>.:Fonts</td><td/><td>0</td><td/></row>
 		<row><td>GlobalAssemblyCache</td><td>TARGETDIR</td><td>.:Global~1|GlobalAssemblyCache</td><td/><td>0</td><td/></row>
-		<row><td>INSTALLDIR</td><td>DIRPROPERTY14</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>INSTALLDIR</td><td>CDE_AUTOMATION</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
 		<row><td>ISMyCompanyDir</td><td>ProgramFilesFolder</td><td>MYCOMP~1|My Company Name</td><td/><td>0</td><td/></row>
 		<row><td>ISMyProductDir</td><td>ISMyCompanyDir</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
@@ -2647,7 +2645,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Autodesk</td><td>0</td><td/><td>1562676202</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Autodesk</td><td>0</td><td/><td>-1927001553</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
@@ -3461,6 +3459,7 @@
 		<row><td>IDS_SETUPEXE_LAUNCH_COND_E</td><td>1033</td><td>This setup was built with an evaluation version of InstallShield and can only be launched from setup.exe.</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1562664553</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME2</td><td>1033</td><td>CDE Automation</td><td>0</td><td/><td>1562690314</td></row>
+		<row><td>IDS_SOFTWARE_REQUIREMENT_MESSAGE1</td><td>1033</td><td>CLICK HERE to enter the message to display to your end user when this item does not exist on the target machine.</td><td>0</td><td/><td>-1926966737</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO</td><td>1033</td><td>From the list of servers below, select the database server you would like to target.</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_DB</td><td>1033</td><td>From the list of catalog names below, select the database catalog you would like to target.</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_TEMPLATE</td><td>1033</td><td>[IS_SQLBROWSE_INTRO]</td><td>0</td><td/><td>1428464783</td></row>
@@ -3749,8 +3748,8 @@
 		<row><td>IDS__TargetReq_DESC_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
-		<row><td>ID_STRING1</td><td>1033</td><td>http://www.Autodesk.com</td><td>0</td><td/><td>1562676202</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>Autodesk</td><td>0</td><td/><td>1562676202</td></row>
+		<row><td>ID_STRING1</td><td>1033</td><td>http://www.Autodesk.com</td><td>0</td><td/><td>-1927001553</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>Walid Sabra</td><td>0</td><td/><td>-1927014993</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>CDE Automation Tool</td><td>0</td><td/><td>1428483056</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Walid Sabra</td><td>0</td><td/><td>1428475472</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1562678889</td></row>
@@ -4391,7 +4390,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>SERIALNUMBER</td><td/><td/></row>
 		<row><td>SERIALNUMVALSUCCESSRETVAL</td><td>1</td><td/></row>
 		<row><td>SHOWLAUNCHPROGRAM</td><td>-1</td><td/></row>
-		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR;INSTALLDIR;DATABASEDIR</td><td/></row>
+		<row><td>SecureCustomProperties</td><td>ISFOUNDNEWERPRODUCTVERSION;USERNAME;COMPANYNAME;ISX_SERIALNUM;SUPPORTDIR</td><td/></row>
 		<row><td>SelectedSetupType</td><td>##IDS__DisplayName_Typical##</td><td/></row>
 		<row><td>SetupType</td><td>Typical</td><td/></row>
 		<row><td>UpgradeCode</td><td>{6558F4E7-AD02-455C-956B-48CBC49443B0}</td><td/></row>
@@ -4436,8 +4435,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s255">Key</col>
 		<col def="S255">Name</col>
 		<col def="I2">Type</col>
-		<row><td>NewSignature1</td><td>2</td><td>SOFTWARE\Bentley\ProjectWise\08.11</td><td>Path</td><td>2</td></row>
-		<row><td>NewSignature2</td><td>2</td><td>SOFTWARE\Bentley\ProjectWise Explorer\08.11</td><td>PathName</td><td>2</td></row>
 	</table>
 
 	<table name="Registry">
@@ -4544,8 +4541,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
 		<row><td>UNINST_Uninstall_CDE_Automation_Setup</td><td>cdeaut_1_cde_automation_setup</td><td>UNINST|Uninstall CDE Automation Setup</td><td>IS_ININSTALL_SHORTCUT</td><td>[SystemFolder]msiexec.exe</td><td>/x {FF59B558-283E-445F-B521-43C29EDA9C46}</td><td/><td/><td>UNINST_Uninstall_C_2ADAE95A5B0842A38EFA5E563826F54B.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>_Built</td><td>cdeaut_1_cde_automation_setup</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built</td><td>cdeaut_1_cde_automation_setup</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td>-c d:\config.xml -l d:\mylog.og -a d:\imp.xlsx</td><td/><td/><td/><td/><td>3</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td>-c d:\config.xml -l d:\mylog.og -a d:\imp.xlsx</td><td/><td/><td/><td/><td>3</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

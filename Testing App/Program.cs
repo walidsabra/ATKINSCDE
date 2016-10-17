@@ -60,8 +60,8 @@ namespace CDEAutomation
             dsInfo dsInfo = new dsInfo();
             dsInfo = xmlHelper.getDatasourceInfo();
 
-            EnvObject EnvInfo = new EnvObject();
-            EnvInfo = xmlHelper.getEnvConfigs();
+            //EnvObject EnvInfo = new EnvObject();
+            //EnvInfo = xmlHelper.getEnvConfigs();
 
             otherConfig myconfig = xmlHelper.getAppConfigs();
 
