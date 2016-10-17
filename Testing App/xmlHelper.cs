@@ -1,15 +1,115 @@
-﻿using System;
+﻿using CDEAutomation.classes;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using CDEAutomation.classes;
+
 
 namespace CDEAutomation
 {
     class xmlHelper
     {
+        public static string location;
+
+        /// <summary>
+        /// Get email columns
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> getEmailColumns()
+        {
+            List<string> columns = new List<string>();
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNodeList xnList;
+
+            try
+            {
+
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/emailColumns/column");
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+
+            foreach (XmlNode item in xnList)
+            {
+                columns.Add(item.InnerText);
+            }
+            return columns;
+        }
+
+        /// <summary>
+        /// Get Notification Settings from xml
+        /// </summary>
+        /// <returns></returns>
+        public static EnvObject getEnvConfigs()
+        {
+            EnvObject Env = new EnvObject();
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNodeList xnList;
+
+            try
+            {
+
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/Environment");
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+
+            foreach (XmlNode item in xnList)
+            {
+                Env.EnvironmentName = item["EnvName"].InnerText;
+                Env.Title = item["TitleCol"].InnerText;
+                Env.FileNumber = item["FileNoCol"].InnerText;
+                Env.Revision = item["RevisionCol"].InnerText;
+                Env.RevisionNote = item["RevNotesCol"].InnerText;
+                Env.Suitability = item["SuitabilityCol"].InnerText;
+                Env.Package = item["PackageCol"].InnerText;
+                Env.DesignStage = item["DesignStageCol"].InnerText;
+            }
+            return Env;
+        }
+
+        /// <summary>
+        /// Get Notification Settings from xml
+        /// </summary>
+        /// <returns></returns>
+        public static oNotification getMsgConfigs()
+        {
+            oNotification msg = new oNotification();
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNodeList xnList;
+
+            try
+            {
+
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/Notification");
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+
+            foreach (XmlNode item in xnList)
+            {
+                msg.host = item["Host"].InnerText;
+                msg.port = int.Parse(item["Port"].InnerText);
+                msg.ssl = bool.Parse(item["SSL"].InnerText);
+                msg.To = item["To"].InnerText;
+                msg.From = item["From"].InnerText;
+                msg.Subject = item["Subject"].InnerText;
+                msg.user = item["user"].InnerText;
+                msg.password = item["password"].InnerText;
+            }
+            return msg;
+        }
+
         /// <summary>
         /// Get WF Section from xml
         /// </summary>
@@ -19,9 +119,21 @@ namespace CDEAutomation
             wfObject WFObj = new wfObject();
             
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load("configurations\\config.xml");
+            XmlNodeList xnList;
 
-            XmlNodeList xnList = xmlDoc.SelectNodes("/Config/workflow");
+            try
+            {
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/workflow");
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
+            
+
+       
             foreach (XmlNode item in xnList)
             {
                 WFObj.WorkflowName = item["WorkflowName"].InnerText;
@@ -41,13 +153,24 @@ namespace CDEAutomation
             //myappconfig = xmlHelper.getAppConfigs();
             
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load("configurations\\config.xml");
+            XmlNodeList xnList;
+            try
+            {
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/appConfig");
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
+            
 
-            XmlNodeList xnList = xmlDoc.SelectNodes("/Config/appConfig");
+           
             foreach (XmlNode item in xnList)
             {
-                myappconfig.copytoP = item["copytofileShare"].InnerText;
-                myappconfig.SendNotification = item["sendNotification"].InnerText;
+                myappconfig.CopytoFileSystem = bool.Parse(item["copytofileShare"].InnerText);
+                myappconfig.SendNotification = bool.Parse(item["sendNotification"].InnerText);
             }
             return myappconfig;
         }
@@ -61,9 +184,18 @@ namespace CDEAutomation
             List<FolderMapping> myList = new List<FolderMapping>();
 
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load("configurations\\config.xml");
-
-            XmlNodeList xnList = xmlDoc.SelectNodes("/Config/FoldersMapping/FolderMapping");
+            XmlNodeList xnList;
+            try
+            {
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/FoldersMapping/FolderMapping");
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
+          
             foreach (XmlNode item in xnList)
             {
                 FolderMapping oneMapping = new FolderMapping();
@@ -88,9 +220,19 @@ namespace CDEAutomation
             dsInfo dsInf = new dsInfo();
 
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load("configurations\\config.xml");
+            XmlNodeList xnList;
 
-            XmlNodeList xnList = xmlDoc.SelectNodes("/Config/ProjectWiseLogin");
+            try
+            {
+                xmlDoc.Load(location);
+                xnList = xmlDoc.SelectNodes("/Config/ProjectWiseLogin");
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
+             
             foreach (XmlNode item in xnList)
             {
                 dsInf.dsName = item["Datasource"].InnerText;

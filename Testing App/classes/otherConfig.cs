@@ -8,7 +8,7 @@ namespace CDEAutomation.classes
 {
     class otherConfig
     {
-       public  string copytoP { get; set; }
-       public string SendNotification { get; set; }
+       public  bool CopytoFileSystem { get; set; }
+       public bool  SendNotification { get; set; }
     }
 }

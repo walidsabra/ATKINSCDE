@@ -1,15 +1,227 @@
-﻿using System;
+﻿using CDEAutomation.classes;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Specialized;
+using System.Net;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using CDEAutomation.classes;
 
 namespace CDEAutomation
 {
     class appMethods
     {
+
+        public static int GetDocIdByFolderId(int PWFolderId, String oName)
+        {
+            int docId = 0;
+            int select = PWMethods.aaApi_SelectDocumentsByProjectId(PWFolderId);
+            for (int v = 0; v < select; v++)
+            {
+                string cName = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(20, v));
+
+                if (cName == oName)
+                {
+                    //get docId 
+                    docId = PWMethods.aaApi_GetDocumentNumericProperty(1, v);
+                }
+            }
+            return docId;
+        }
+
+        /// <summary>
+        /// Get Columns ID, Labels By Environment Id 
+        /// </summary>
+        /// <param name="oEnvId"></param>
+        /// <param name="ColumnsList"></param>
+        public static void GetColumnsByEnvID(int oEnvId, List<PWAttr> ColumnsList)
+        {
+            int intrAttrCount = PWMethods.aaApi_SelectEnvAttrGuiDefs(oEnvId, -1, -1, -1, -1);
+            if (intrAttrCount > 0)
+            {
+                for (int m = 0; m < intrAttrCount; m++)
+                {
+                    //AADMSBUFFER_EATTRGUI - 17 = Label Text ~ 3 = ColId ~ 2 = TableID
+                    PWAttr Column = new PWAttr();
+                    Column.ColumnId = PWMethods.aaApi_GetEnvAttrGuiDefNumericProperty(3, m);
+                    Column.TableId = PWMethods.aaApi_GetEnvAttrGuiDefNumericProperty(2, m);
+                    Column.LabelText = Marshal.PtrToStringUni(PWMethods.aaApi_GetEnvAttrGuiDefStringProperty(17, m));
+                    ColumnsList.Add(Column);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Send Mail with processed documents 
+        /// </summary>
+        /// <param name="body"></param>
+        public static void SendMail2(List<emailColumn> docList, int NuCols)
+        {
+            string body;
+            body = "The following files located in ProjectWise are issued for your action/information. Click on File Number to access files.";
+            body = body + "<br/><br/>";
+            body = body + @"<table border=""1"">" +
+                            @"<tr style=""background-color:blue; color:white"">";
+            int g = 0;
+                            foreach (emailColumn col in docList)
+	                        {
+                                g++;
+                                body = body + "<th>" + col.ColumnName + "</th>";
+                                if (g == NuCols)
+                                {
+                                    break;
+                                }
+	                        }
+            body = body + "</tr>";
+
+            int h = 0;
+            foreach (emailColumn item in docList)
+            {
+                if (h==0)
+                {
+                    body = body + "<tr>";
+                }
+                if (item.ColumnName == "Name")
+                {
+                    body = body + "<td>" + @"<a href=""" + item.URL + @""">" + item.ColumnVaule + "</a> </td>";
+                }
+                else
+                {
+                    body = body + "<td>" + item.ColumnVaule + "</td>";
+                }
+                
+                if (h==NuCols -1)
+                {
+                    body = body + "</tr>";
+                }
+                h++;
+                if (h == NuCols)
+                {
+                    h = 0;
+                }
+            }
+
+            body = body + "</table>";
+            body = body + "<br/><br/>";
+            body = body + "Note: These files are also replicated to Z: drive.";
+
+            Console.WriteLine(body);
+
+            Console.WriteLine("Sending email...");
+
+            oNotification msg = xmlHelper.getMsgConfigs();
+            msg.Body = body;
+
+            //MailAddress to = new MailAddress(msg.To);
+            MailAddress from = new MailAddress(msg.From);
+            MailMessage mail = new MailMessage();
+            mail.From = from;
+            mail.To.Add(msg.To);  //add array of addresses and loop to add
+            mail.Subject = msg.Subject;
+            mail.Body = msg.Body;
+            mail.IsBodyHtml = true;
+
+
+
+            SmtpClient smtp = new SmtpClient();
+            smtp.Host = msg.host;
+            smtp.Port = msg.port;
+
+            smtp.Credentials = new NetworkCredential(msg.user, msg.password);
+            smtp.EnableSsl = msg.ssl;
+
+            try
+            {
+                smtp.Send(mail);
+                log.write("Success", "Email Sent");
+            }
+            catch (Exception)
+            {
+
+                log.write("Failed", "Couldn't send email");
+            }
+
+        }
+
+        /// <summary>
+        /// Send Mail with processed documents 
+        /// </summary>
+        /// <param name="body"></param>
+        public static void SendMail(List<emailColumns> docList)
+        {
+            string body;
+            body = "The following files located in ProjectWise are issued for your action/information. Click on File Number to access files.";
+            body = body + "<br/><br/>";
+            body = body +  @"<table border=""1"">" +
+                            @"<tr style=""background-color:blue; color:white"">" +
+                                "<th>Package</th>" +
+                                "<th>File Number</th>" +
+                                "<th>Revision</th>" +
+                                "<th>Title</th>" +
+                                "<th>Revision Note</th>" +
+                                "<th>Suitability</th>" +
+                                "<th>Design Stage</th>" +
+                                "<th>File Updated</th>" +
+                                "<th>File Updated By</th>" +
+                            "</tr>";
+
+            foreach (emailColumns item in docList)
+            {
+                string row = 
+                            "<tr>" +
+                                "<td>" + item.Package + "</td>" +
+                                "<td>" + @"<a href=""" + item.URL + @""">" + item.FileNumber + "</a> </td>" + 
+                                "<td>" + item.Revision + "</td>" +
+                                "<td>" + item.Title + "</td>" +
+                                "<td>" + item.RevisionNote + "</td>" +
+                                "<td>" + item.Suitability + "</td>" +
+                                "<td>" + item.DesignStage + "</td>" + 
+                                "<td>" + item.FileUpdated + "</td>" +
+                                "<td>" + item.FileUpdatedBy + "</td>" +
+                            "</tr>";
+                body = body + row;
+            }
+
+             body = body + "</table>";
+             body = body + "<br/><br/>";
+             body = body + "Note: These files are also replicated to Z: drive.";
+
+            //Console.WriteLine(body);
+
+            Console.WriteLine("Sending email...");
+
+            oNotification msg = xmlHelper.getMsgConfigs();
+            msg.Body = body;
+
+            //MailAddress to = new MailAddress(msg.To);
+            MailAddress from = new MailAddress(msg.From);
+            MailMessage mail = new MailMessage();
+            mail.From = from;
+            mail.To.Add(msg.To);  //add array of addresses and loop to add
+            mail.Subject = msg.Subject;
+            mail.Body = msg.Body;
+            mail.IsBodyHtml = true;
+            
+
+
+            SmtpClient smtp = new SmtpClient();
+            smtp.Host = msg.host;
+            smtp.Port = msg.port;
+
+            smtp.Credentials = new NetworkCredential(msg.user, msg.password);
+            smtp.EnableSsl = msg.ssl;
+
+            try
+            {
+                smtp.Send(mail);
+                log.write("Success", "Email Sent");
+            }
+            catch (Exception)
+            {
+
+                log.write("Failed", "Couldn't send email");
+            }
+          
+        }
 
         /// <summary>
         /// Change Document WF State
@@ -97,6 +309,7 @@ namespace CDEAutomation
             if (docCreated)
             {
                 Console.WriteLine(fileName + " Created Sucessfully on ProjectWise");
+                log.write("Success", fileName + " Created Sucessfully on ProjectWise");
 
                 //select created document to update WF state
                 int selected = PWMethods.aaApi_SelectDocumentsByProjectId(folderId);
@@ -111,6 +324,10 @@ namespace CDEAutomation
 
                         //change WF state to Shared
                         ChangeWFState(docId, folderId, 1, "Changed to Shared by CDE Automation");
+
+                        //Update Attributes
+
+                        //Add Row
                     }
                 }
 
@@ -119,6 +336,7 @@ namespace CDEAutomation
             else
             {
                 //Document was not created - error?
+                log.write("Error", "Error Creating document");
             }
         }
 

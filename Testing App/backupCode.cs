@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using CDEAutomation.classes;
 
 namespace CDEAutomation
 {
@@ -91,6 +92,155 @@ namespace CDEAutomation
             {
 
                 throw;
+            }
+        }
+
+
+                            //int envSelected = PWMethods.aaApi_SelectEnvByTableId(9);
+                    //int coId = PWMethods.aaApi_GetEnvNumericProperty(4, 0);
+                    //Console.WriteLine("Col Id: " + coId);
+
+         
+
+                    //bool valid1 = PWMethods.aaApi_SetLinkDataColumnValue(10, 1, "Ttestttttttt");
+                    //bool valid2 = PWMethods.aaApi_CreateLinkData(10, 9, 100000);
+
+                    //int err = PWMethods.aaApi_GetLastErrorId();
+                    //Console.WriteLine("Error Id: " +err);
+
+                    //string colValue = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, 5));
+                    //for (int i = 0; i < 9; i++)
+                    //{
+                    //    string colValue = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, i));
+                    //    Console.WriteLine("Id is: {0} - Vaule is: {1}", i, colValue);
+                    //}
+
+
+                    //Console.WriteLine(colValue);
+                    //bool valid4 = PWMethods.aaApi_UpdateLinkDataColumnValue(10, 5, "Test From Code");
+                    //bool valid3 = PWMethods.aaApi_UpdateEnvAttr(10, 14);
+                    //Console.WriteLine(colValue);
+
+                    //bool valid2 = PWMethods.aaApi_CreateLinkData(10, 1, 1000000);
+
+                    //Console.WriteLine("Set: " + valid1);
+                    //Console.WriteLine("create: " + valid2);
+                    //Console.WriteLine("Update: " + valid3);
+                    //Console.WriteLine("Updated: " + valid4);
+
+
+        //int lTableCount = PWMethods.aaApi_SelectAllTables();
+        //for (int x = 0; x < lTableCount; x++)
+        //{
+        //    string tblName = Marshal.PtrToStringUni(PWMethods.aaApi_GetTableStringProperty(3, x));
+        //    //aaApi_SelectEnv 
+        //    //aaApi_GetEnvStringProperty
+        //    //AADMSBUFFER_ENVIRONMENT
+        //    if (tblName == EnvInfo.EnvironmentName)
+        //    {
+        //        tblId = PWMethods.aaApi_GetTableNumericProperty(1, x);
+        //        int EnvCount = PWMethods.aaApi_SelectEnvByTableId(tblId);
+        //        colCount = PWMethods.aaApi_SelectColumnsByTable(tblId);
+        //        Console.WriteLine("TableName: {0} - TableId: {1} - Columns:{2}", tblName, tblId, colCount);
+        //    }
+
+        //}
+
+
+
+        //if (!exists)
+        //{
+        //    //create folder
+        //    System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(item.PDriveFolder);
+        //    dir.Create();
+        //}
+
+
+
+        ////Get ColId 
+        ////1 - SelectColByTabId
+        ////2 - Get COl Numeric 
+        //for (int z = 0; z < colCount; z++)
+        //{
+        //    string colName = Marshal.PtrToStringUni(PWMethods.aaApi_GetColumnStringProperty(9, z));
+        //    int colId = PWMethods.aaApi_GetColumnNumericProperty(1, z);
+        //    //Console.WriteLine("Name: {0} - Id: {1}", colName, colId);
+        //    if (colName == EnvInfo.Title)
+        //    {
+        //        bool valid1 = PWMethods.aaApi_SetLinkDataColumnValue(tblId, colId, "Title testttttttt");
+        //        if (valid1)
+        //        {
+        //            bool valid2 = PWMethods.aaApi_CreateLinkData(tblId, colId, 10000);
+        //        }
+        //    }
+        //}
+
+        ////aaApi_SetLinkDataColumnValue
+        ////aaApi_CreateLinkData() 
+
+
+
+
+
+        //Get Env Attributes 
+        //GetFileAttributesforEmail(EnvInfo, PWFolderId, tblId, colCount, row, docId);
+        //docList.Add(row);
+
+        private static void GetFileAttributesforEmail(EnvObject EnvInfo, int PWFolderId, int tblId, int colCount, emailColumns row, int docId)
+        {
+            //get Env attributes
+            int selectedRows = PWMethods.aaApi_SelectLinkDataByObject(tblId, 2, PWFolderId, docId, "", 0, 0, 0);
+
+            int colId;
+
+            if (selectedRows > 0)
+            {
+                //AADMSBUFFER_TABLE
+                //AADMSBUFFER_ENVIRONMENT
+                //aaApi_SelectEnvByProjectId
+                //aaApi_SelectEnvByTableId
+                //aaApi_GetEnvStringProperty
+                for (int y = 0; y < colCount; y++)
+                {
+                    string colName = Marshal.PtrToStringUni(PWMethods.aaApi_GetColumnStringProperty(9, y));
+                    colId = PWMethods.aaApi_GetColumnNumericProperty(1, y);
+
+                    if (colName == EnvInfo.Title)
+                    {
+                        row.Title = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    if (colName == EnvInfo.Package)
+                    {
+                        row.Package = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    if (colName == EnvInfo.FileNumber)
+                    {
+                        row.FileNumber = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    if (colName == EnvInfo.Revision)
+                    {
+                        row.Revision = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    if (colName == EnvInfo.RevisionNote)
+                    {
+                        row.RevisionNote = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    if (colName == EnvInfo.Suitability)
+                    {
+                        row.Suitability = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    if (colName == EnvInfo.DesignStage)
+                    {
+                        row.DesignStage = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, y));
+                    }
+                    bool valid1 = PWMethods.aaApi_UpdateLinkData(tblId, colId, "Hi");
+                    //Console.WriteLine("Update Col" + valid1);
+                    if (valid1)
+                    {
+                        bool valid2 = PWMethods.aaApi_UpdateEnvAttr(tblId, colId);
+                        //Console.WriteLine("Update Env" + valid2);
+                    }
+                }
             }
         }
     }
