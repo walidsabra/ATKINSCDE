@@ -260,10 +260,14 @@ namespace CDEAutomation
                                               select x;
                                 foreach (var xlrow in docAttr)
                                 {
+                                    string NameInXls = xlrow["Name"].Value.ToString().ToUpper();
+                                    string NameInPW = oName.ToUpper();
+                                    Console.WriteLine("PW: {0} - XLS: {1}",NameInPW,NameInXls);
                                     int n = 0;
                                     for (int i = 0; i < ColumnsList.Count; i++)
                                     {
                                         string colLabel = ColumnsList[i].LabelText;
+
                                         string colValue = string.Empty;
 
                                         try
@@ -275,11 +279,11 @@ namespace CDEAutomation
 
                                             colValue = string.Empty;
                                         }
-                                        if (colValue != string.Empty && oName == xlrow["Name"])//xlrow[colName]!="")
+                                        if (colValue != string.Empty && NameInPW == NameInXls)//xlrow[colName]!="")
                                         {
                                             //log.write("Info", "Id: " + i + " - Column: " + colLabel + " - Vaule: " + colValue);
-                                            bool UpdateLinkData = PWMethods.aaApi_UpdateLinkDataColumnValue(TableId, i + 1, colValue);
-                                            Console.WriteLine("Update Link Data: {0} - Column: {1} - Id: {2} - Vaule: {3}", UpdateLinkData, colLabel, i, colValue);
+                                            bool UpdateLinkData = PWMethods.aaApi_UpdateLinkDataColumnValue(TableId, ColumnsList[i].ColumnId , colValue);
+                                            Console.WriteLine("Update Link Data: {0} - Column: {1} - Id: {2} - Vaule: {3}", UpdateLinkData, colLabel, ColumnsList[i].ColumnId, colValue);
                                             n++;
                                         }
                                     }
@@ -312,7 +316,7 @@ namespace CDEAutomation
                         if (selectedRows==0)
                         {
                             bool blankCreated = PWMethods.aaApi_CreateLinkDataAndLink(TableId, 1, PWFolderId, docId,0,"",1);
-                            //Console.WriteLine("Blank Created?:" + blankCreated);
+                            Console.WriteLine("Blank Created?:" + blankCreated);
                             selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
                             goto rowExists;
                         }
