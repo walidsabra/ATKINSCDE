@@ -117,7 +117,7 @@ namespace CDEAutomation
         public static wfObject getWFConfigs()
         {
             wfObject WFObj = new wfObject();
-            
+
             XmlDocument xmlDoc = new XmlDocument();
             XmlNodeList xnList;
 
@@ -128,12 +128,12 @@ namespace CDEAutomation
             }
             catch (System.Exception)
             {
-                
+
                 throw;
             }
-            
 
-       
+
+
             foreach (XmlNode item in xnList)
             {
                 WFObj.WorkflowName = item["WorkflowName"].InnerText;
@@ -151,7 +151,7 @@ namespace CDEAutomation
         {
             otherConfig myappconfig = new otherConfig();
             //myappconfig = xmlHelper.getAppConfigs();
-            
+
             XmlDocument xmlDoc = new XmlDocument();
             XmlNodeList xnList;
             try
@@ -161,12 +161,12 @@ namespace CDEAutomation
             }
             catch (System.Exception)
             {
-                
+
                 throw;
             }
-            
 
-           
+
+
             foreach (XmlNode item in xnList)
             {
                 myappconfig.CopytoFileSystem = bool.Parse(item["copytofileShare"].InnerText);
@@ -192,10 +192,10 @@ namespace CDEAutomation
             }
             catch (System.Exception)
             {
-                
+
                 throw;
             }
-          
+
             foreach (XmlNode item in xnList)
             {
                 FolderMapping oneMapping = new FolderMapping();
@@ -206,7 +206,7 @@ namespace CDEAutomation
 
                 myList.Add(oneMapping);
             }
-           
+
 
             return myList;
         }
@@ -229,10 +229,10 @@ namespace CDEAutomation
             }
             catch (System.Exception)
             {
-                
+
                 throw;
             }
-             
+
             foreach (XmlNode item in xnList)
             {
                 dsInf.dsName = item["Datasource"].InnerText;

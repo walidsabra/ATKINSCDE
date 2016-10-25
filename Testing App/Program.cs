@@ -87,12 +87,8 @@ namespace CDEAutomation
                 log.write("Failed", "Couldn't login to ProjectWise");
             }
 
-            //read xls file
-            var excel = new LinqToExcel.ExcelQueryFactory();
-            excel.FileName = xlsLoc;
-            var docAttr = from x in excel.Worksheet()
-                          select x;
 
+            
 
             // Mappings
             foreach (FolderMapping item in folderList)
@@ -233,6 +229,7 @@ namespace CDEAutomation
                         docId = appMethods.GetDocIdByFolderId(PWFolderId, oName);
                     }
 
+              
 
                     //Update Attribute from xls
                     int colCount = PWMethods.aaApi_SelectColumnsByTable(TableId);
@@ -240,62 +237,82 @@ namespace CDEAutomation
                     Console.WriteLine("Link rows selected: " + selectedRows);
                 rowExists:                
                         //Case document already has attributes in Env
-                        if (selectedRows>0)
+                        if (selectedRows>0 )
                         {
                             string attrnoValue = string.Empty;
                             for (int i = 0; i < colCount; i++)
                             {
-                                string colName = Marshal.PtrToStringUni(PWMethods.aaApi_GetColumnStringProperty(colCount, i));
+                                string colName = Marshal.PtrToStringUni(PWMethods.aaApi_GetColumnStringProperty(9, i));
                                 //Console.WriteLine(colName);
                                 if (colName == "a_attrno")
                                 {
                                     attrnoValue = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, i));
-                                    //Console.WriteLine(attrnoValue);
+                                    Console.WriteLine("a_attrno:" + attrnoValue);
                                 }
                             }
 
-                            foreach (var xlrow in docAttr)
+                            if (xlsLoc !=string.Empty)
                             {
-                                int n = 0;
-                                for (int i = 0; i < ColumnsList.Count; i++)
+                                //read xls file
+                                var excel = new LinqToExcel.ExcelQueryFactory();
+                                excel.FileName = xlsLoc;
+                                var docAttr = from x in excel.Worksheet()
+                                              select x;
+                                foreach (var xlrow in docAttr)
                                 {
-                                    string colLabel = ColumnsList[i].LabelText;
-                                    string colValue = string.Empty;
-                                    
-                                    try
+                                    int n = 0;
+                                    for (int i = 0; i < ColumnsList.Count; i++)
                                     {
-                                        colValue = xlrow[colLabel];
-                                    }
-                                    catch (Exception)
-                                    {
+                                        string colLabel = ColumnsList[i].LabelText;
+                                        string colValue = string.Empty;
 
-                                        colValue = string.Empty;
+                                        try
+                                        {
+                                            colValue = xlrow[colLabel];
+                                        }
+                                        catch (Exception)
+                                        {
+
+                                            colValue = string.Empty;
+                                        }
+                                        if (colValue != string.Empty && oName == xlrow["Name"])//xlrow[colName]!="")
+                                        {
+                                            //log.write("Info", "Id: " + i + " - Column: " + colLabel + " - Vaule: " + colValue);
+                                            bool UpdateLinkData = PWMethods.aaApi_UpdateLinkDataColumnValue(TableId, i + 1, colValue);
+                                            Console.WriteLine("Update Link Data: {0} - Column: {1} - Id: {2} - Vaule: {3}", UpdateLinkData, colLabel, i, colValue);
+                                            n++;
+                                        }
                                     }
-                                    if (colValue !=string.Empty && oName==xlrow["Name"])//xlrow[colName]!="")
-                                    {
-                                        Console.WriteLine("id: {0} - column: {1} - Value: {2}", i, colLabel, colValue);
-                                        log.write("Info", "Id: " + i + " - Column: " + colLabel + " - Vaule: " + colValue);
-                                        bool UpdateLinkData = PWMethods.aaApi_UpdateLinkDataColumnValue(TableId, i+1, colValue);
-                                        n++;
+                                
+                                    if (n != 0)
+                                    {                                
+                                        bool UpdateEnv = false;
+                                        try
+                                        {
+                                            UpdateEnv = PWMethods.aaApi_UpdateEnvAttr(TableId, int.Parse(attrnoValue));
+
+                                        }
+                                        catch (Exception)
+                                        {
+
+                                            continue;
+                                        } 
+                                        
+                                        if (UpdateEnv)
+                                        {
+                                            Console.WriteLine("{0} Attributes Updated", n);
+                                            log.write("Info", n + " Attributes Updated");
+                                            break;
+                                        }
                                     }
-                                }
-                                if (n!=0)
-                                {               
-                                    bool UpdateEnv = PWMethods.aaApi_UpdateEnvAttr(TableId, int.Parse(attrnoValue));
-                                    if (UpdateEnv)
-                                    {
-                                        Console.WriteLine("{0} Attributes Updated", n);
-                                        log.write("Info", n + " Attributes Updated");
-                                        break;
-                                    }
-                                }
+                                } 
                             }
                         }
                         //Case no record in Env
                         if (selectedRows==0)
                         {
                             bool blankCreated = PWMethods.aaApi_CreateLinkDataAndLink(TableId, 1, PWFolderId, docId,0,"",1);
-                            //Console.WriteLine(blankCreated);
+                            //Console.WriteLine("Blank Created?:" + blankCreated);
                             selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
                             goto rowExists;
                         }

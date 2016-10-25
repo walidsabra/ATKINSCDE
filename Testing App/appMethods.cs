@@ -62,21 +62,21 @@ namespace CDEAutomation
             body = body + @"<table border=""1"">" +
                             @"<tr style=""background-color:blue; color:white"">";
             int g = 0;
-                            foreach (emailColumn col in docList)
-	                        {
-                                g++;
-                                body = body + "<th>" + col.ColumnName + "</th>";
-                                if (g == NuCols)
-                                {
-                                    break;
-                                }
-	                        }
+            foreach (emailColumn col in docList)
+            {
+                g++;
+                body = body + "<th>" + col.ColumnName + "</th>";
+                if (g == NuCols)
+                {
+                    break;
+                }
+            }
             body = body + "</tr>";
 
             int h = 0;
             foreach (emailColumn item in docList)
             {
-                if (h==0)
+                if (h == 0)
                 {
                     body = body + "<tr>";
                 }
@@ -88,8 +88,8 @@ namespace CDEAutomation
                 {
                     body = body + "<td>" + item.ColumnVaule + "</td>";
                 }
-                
-                if (h==NuCols -1)
+
+                if (h == NuCols - 1)
                 {
                     body = body + "</tr>";
                 }
@@ -161,7 +161,7 @@ namespace CDEAutomation
                 myWF.WorkflowName = Marshal.PtrToStringUni(PWMethods.aaApi_GetWorkflowStringProperty(3, i));
                 if (myWF.WorkflowName == WFObj.WorkflowName)
                 {
-                    myWF.WorkflowId = PWMethods.aaApi_GetWorkflowNumericProperty(1, 0);
+                    myWF.WorkflowId = PWMethods.aaApi_GetWorkflowNumericProperty(1, i);
                     //Console.WriteLine("WF Id is: " + myWF.WorkflowId);
                 }
 
@@ -184,8 +184,8 @@ namespace CDEAutomation
                 }
             }
 
-            //Console.WriteLine("Pending Approval states id is: " + myWF.StateOneId);
-            //Console.WriteLine("Approved  states id is: " + myWF.StateTwoId);
+            //Console.WriteLine("Shared state id is: " + myWF.StateOneId);
+            //Console.WriteLine("Archived states id is: " + myWF.StateTwoId);
 
             if (state == 1)
             {
