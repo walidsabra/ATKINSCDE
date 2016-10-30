@@ -2335,6 +2335,7 @@
 		<col def="S255">TestValue</col>
 		<col def="i4">Type</col>
 		<row><td>CDE Automation Tool</td><td>Testing App\CDE Automation Tool.csproj</td><td/><td>2</td></row>
+		<row><td>CDE Automation Tool Win</td><td>CDE Automation Tool Win\CDE Automation Tool Win.csproj</td><td/><td>2</td></row>
 		<row><td>CommonFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>ISPROJECTDIR</td><td/><td/><td>1</td></row>
 		<row><td>ISProductFolder</td><td/><td/><td>1</td></row>
@@ -2645,7 +2646,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Autodesk</td><td>0</td><td/><td>-1927001553</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Autodesk</td><td>0</td><td/><td>-182186326</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_OS</td><td>1033</td><td>The operating system is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
@@ -3459,6 +3460,7 @@
 		<row><td>IDS_SETUPEXE_LAUNCH_COND_E</td><td>1033</td><td>This setup was built with an evaluation version of InstallShield and can only be launched from setup.exe.</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1562664553</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME2</td><td>1033</td><td>CDE Automation</td><td>0</td><td/><td>1562690314</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME3</td><td>1033</td><td>CDE Automation UI</td><td>0</td><td/><td>-584818102</td></row>
 		<row><td>IDS_SOFTWARE_REQUIREMENT_MESSAGE1</td><td>1033</td><td>CLICK HERE to enter the message to display to your end user when this item does not exist on the target machine.</td><td>0</td><td/><td>-1926966737</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO</td><td>1033</td><td>From the list of servers below, select the database server you would like to target.</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_DB</td><td>1033</td><td>From the list of catalog names below, select the database catalog you would like to target.</td><td>0</td><td/><td>1428464783</td></row>
@@ -3748,12 +3750,13 @@
 		<row><td>IDS__TargetReq_DESC_PROCESSOR</td><td>1033</td><td>The processor is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>1428464783</td></row>
-		<row><td>ID_STRING1</td><td>1033</td><td>http://www.Autodesk.com</td><td>0</td><td/><td>-1927001553</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>Walid Sabra</td><td>0</td><td/><td>-1927014993</td></row>
+		<row><td>ID_STRING1</td><td>1033</td><td>http://www.Autodesk.com</td><td>0</td><td/><td>-182186326</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>Autodesk</td><td>0</td><td/><td>-182186326</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>CDE Automation Tool</td><td>0</td><td/><td>1428483056</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Walid Sabra</td><td>0</td><td/><td>1428475472</td></row>
 		<row><td>ID_STRING5</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1562678889</td></row>
 		<row><td>ID_STRING6</td><td>1033</td><td>Launch |Built</td><td>0</td><td/><td>1562657450</td></row>
+		<row><td>ID_STRING7</td><td>1033</td><td>CDE Automation UI</td><td>0</td><td/><td>-584811958</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>1428464783</td></row>
 	</table>
 
@@ -4541,8 +4544,8 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
 		<row><td>UNINST_Uninstall_CDE_Automation_Setup</td><td>cdeaut_1_cde_automation_setup</td><td>UNINST|Uninstall CDE Automation Setup</td><td>IS_ININSTALL_SHORTCUT</td><td>[SystemFolder]msiexec.exe</td><td>/x {FF59B558-283E-445F-B521-43C29EDA9C46}</td><td/><td/><td>UNINST_Uninstall_C_2ADAE95A5B0842A38EFA5E563826F54B.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>_Built</td><td>cdeaut_1_cde_automation_setup</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td>-c d:\config.xml -l d:\mylog.og -a d:\imp.xlsx</td><td/><td/><td/><td/><td>3</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
-		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td>-c d:\config.xml -l d:\mylog.og -a d:\imp.xlsx</td><td/><td/><td/><td/><td>3</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built</td><td>cdeaut_1_cde_automation_setup</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>_Built1</td><td>DesktopFolder</td><td>##IDS_SHORTCUT_DISPLAY_NAME2##</td><td>CDE_Automation_Tool.Primary_output</td><td>AlwaysInstall</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">

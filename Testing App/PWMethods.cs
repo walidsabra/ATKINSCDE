@@ -55,7 +55,7 @@ namespace CDEAutomation
             int ulFlags,
             int lProjectId,
             int lDocumentId,
-            int lpctstrVersion,
+            String lpctstrVersion,
             String lpctstrComment,
             int lplVersionDocId
             );
