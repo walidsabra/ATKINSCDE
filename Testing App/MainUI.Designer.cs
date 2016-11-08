@@ -158,11 +158,11 @@
             // 
             // openFileDialog2
             // 
-            this.openFileDialog2.Filter = "excel files | *.xlsx | excel files | *.xls";
+            this.openFileDialog2.Filter = "excel files | *.xlsx";
             // 
             // openFileDialog3
             // 
-            this.openFileDialog3.Filter = "txt files | *.txt | log files | *.log";
+            this.openFileDialog3.Filter = "log files | *.log";
             // 
             // MainUI
             // 
@@ -174,6 +174,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainUI";
             this.Text = "CDE Automation Tool";
+            this.Load += new System.EventHandler(this.MainUI_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

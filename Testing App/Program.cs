@@ -38,8 +38,8 @@ namespace CDEAutomation
             }
             else
             {
-                Console.WriteLine("Missing arugments");
-                Console.WriteLine(@"Usage: ""CDEAutomation.exe -c config.xml -l log.txt -a attributes.xlsx"" ");
+                //Console.WriteLine("Missing arugments");
+                //Console.WriteLine(@"Usage: ""CDEAutomation.exe -c config.xml -l log.txt -a attributes.xlsx"" ");
 
                 //log.write("Failed", "Missing appication arugments");
 

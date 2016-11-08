@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CDEAutomation.classes;
+using System.Configuration;
 
 namespace CDEAutomation
 {
@@ -17,14 +18,19 @@ namespace CDEAutomation
         public MainUI()
         {
             InitializeComponent();
+
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
+            CDEAutomation.Properties.Settings.Default["TXTBOX1"] = textBox1.Text;
+            CDEAutomation.Properties.Settings.Default["TXTBOX2"] = textBox2.Text;
+            CDEAutomation.Properties.Settings.Default["TXTBOX3"] = textBox3.Text;
+            CDEAutomation.Properties.Settings.Default.Save();
 
-            if (string.IsNullOrEmpty(textBox1.Text))
+            if (string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox2.Text))
             {
-                MessageBox.Show("Please Select Configuration file");
+                MessageBox.Show("Please select configuration and attributes files");
             }
             else
             {
@@ -43,6 +49,7 @@ namespace CDEAutomation
                 }
                 //Application.ExitThread();
                 appMethods.runCDEAuto();
+                Application.ExitThread();
             }
         }
 
@@ -74,6 +81,13 @@ namespace CDEAutomation
             {
                 textBox3.Text = openFileDialog3.FileName;
             }
+        }
+
+        private void MainUI_Load(object sender, EventArgs e)
+        {
+            textBox1.Text = CDEAutomation.Properties.Settings.Default["TXTBOX1"].ToString();
+            textBox2.Text = CDEAutomation.Properties.Settings.Default["TXTBOX2"].ToString();
+            textBox3.Text = CDEAutomation.Properties.Settings.Default["TXTBOX3"].ToString();
         }
 
 
