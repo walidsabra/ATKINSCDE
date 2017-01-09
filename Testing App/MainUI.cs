@@ -47,9 +47,24 @@ namespace CDEAutomation
                   log.location = textBox3.Text;
 
                 }
-                //Application.ExitThread();
-                appMethods.runCDEAuto();
-                Application.ExitThread();
+
+                //Login to ProjectWise
+                dsInfo dsInfo = new dsInfo();
+                dsInfo = xmlHelper.getDatasourceInfo();
+
+                bool Initialized = PWMethods.aaApi_Initialize(0);
+                bool validLogin = PWMethods.aaApi_Login(0, dsInfo.dsName, dsInfo.dsUser, dsInfo.dsPass, null);
+                if (validLogin)
+                {
+                    //Application.ExitThread();
+                    appMethods.runCDEAuto();
+                    Application.ExitThread();    
+                }
+                else
+                {
+                    MessageBox.Show("Couldn't Login to ProjectWise");
+                }
+                
             }
         }
 

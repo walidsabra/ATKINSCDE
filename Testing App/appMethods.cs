@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Linq;
 
+
 namespace CDEAutomation
 {
     class appMethods
@@ -53,9 +54,8 @@ namespace CDEAutomation
             else
             {
                 log.write("Failed", "Couldn't login to ProjectWise");
+                return;
             }
-
-
 
 
             // Mappings
@@ -89,17 +89,27 @@ namespace CDEAutomation
                 //is there is PW folder with this name?
                 if (xFolders == 0)
                 {
-                    ////check if list of records stored in memory to send noti is sent here 
-                    //if (myconfig.SendNotification)
-                    //{
-                    //    if (docList.Count() > 0)
-                    //    {
-                    //        appMethods.SendMail(docList);
-                    //    }
-
-                    //}
                     Console.WriteLine("Error - Folder doesn't exist in ProjectWise");
                     log.write("Error", "Folder doesn't exist in ProjectWise");
+                    continue;
+                }
+
+               
+                //are PW States Valide for this Folder?
+                bool statesValidated = appMethods.ValidateStates(folderId);
+                if (!statesValidated)
+                {
+                    Console.WriteLine("Error - Couldn't Select State; check your configuration File ");
+                    log.write("Error", "Couldn't Select State; check your configuration File");
+                    continue;
+                }
+
+                //if staging folder doesn't exists 
+                bool StagingExists = System.IO.Directory.Exists(item.stagingfolder);
+                if (!StagingExists)
+                {
+                    Console.WriteLine("Error - Staging Folder doesn't exist");
+                    log.write("Error", "Staging Folder doesn't exist");
                     continue;
                 }
 
@@ -111,6 +121,42 @@ namespace CDEAutomation
                     log.write("Error", "Folder doesn't exist in FileSystem Location");
                     continue;
                 }
+
+                //check PW & Z drive permissions 
+                string myguid = Guid.NewGuid().ToString();
+                string textFile = Path.Combine(item.PDriveFolder, myguid + ".tmp");
+                // perhaps check File.Exists(file), but it would be a long-shot...
+                bool canCreate;
+                //check can create doc in PW?
+                bool canCreatePW = PWMethods.aaApi_CreateDocument(0, folderId, 0, 0, 0, 0, 0, 0, textFile, myguid + ".tmp", myguid, null, null, false, 0, null, 1000, 0);
+                if (!canCreatePW)
+                {
+                    Console.WriteLine("Error - User doesn't have the right permissions to this ProjectWise folder");
+                    log.write("Error", "User doesn't have the right permissions to this ProjectWise folder");
+                    continue;
+                }
+                else
+                {
+                    //delete file here from PW
+                }
+
+                try
+                {
+                    using (File.Create(textFile)) { }
+                    File.Delete(textFile);
+                    canCreate = true;
+                }
+                catch
+                {
+                    canCreate = false;
+                }
+                if (!canCreate)
+                {
+                    Console.WriteLine("Error - User doesn't have the right permissions to this folder");
+                    log.write("Error", "User doesn't have the right permissions to this folder");
+                    continue;
+                }
+
 
                 List<PWAttr> ColumnsList = new List<PWAttr>();
                 for (int f = 0; f < xFolders; f++)
@@ -131,243 +177,323 @@ namespace CDEAutomation
                     }
                 }
 
-                //Select files (all general attributes) within PW Folder
-                int selected = PWMethods.aaApi_SelectDocumentsByProjectId(PWFolderId);
-                Console.WriteLine("Document in Folder?: " + selected);
-                log.write("", "Document in Folder?: " + selected);
 
 
 
                 //Loop on file in Staging Folder  sorted by Size Ascending 
                 foreach (var file in d.GetFiles("*.*").OrderBy(f => f.Length))
                 {
-                    String ofilePath = file.FullName;
-                    String ofileName = file.Name;
-                    String oName = Path.GetFileNameWithoutExtension(file.FullName);
-                    int docId = 0;
+                    log.write("File Name1", file.Name);
+                    //Select files (all general attributes) within PW Folder
+                    int selected = PWMethods.aaApi_SelectDocumentsByProjectId(PWFolderId);
+                    Console.WriteLine("Document in Folder?: " + selected);
+                    log.write("", "Document in Folder?: " + selected);
 
-
-                    //loop on PW Select Files within folder to check if File already Exist - Create Version
-                    if (selected > 0)
+                    try
                     {
-                        bool created = false;
+                        string ofilePath = file.FullName;
+                        string ofileName = file.Name;
+                        string oName = Path.GetFileNameWithoutExtension(file.FullName);
+                        int docId = 0;
 
-                        for (int i = 0; i < selected; i++)
+                        log.write("File Name2", file.Name);
+
+                        //loop on PW Select Files within folder to check if File already Exist - Create Version
+                        if (selected > 0)
                         {
-                            string documentFileName = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(21, i));
-                            if (documentFileName == ofileName)
+                            bool created = false;
+
+                            for (int i = 0; i < selected; i++)
                             {
-                                //Active Version?
-                                //Get General Attributes 
+                                string documentFileName = string.Empty;
+                                try
+                                {
+                                    documentFileName = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(21, i));
+                                }
+                                catch (Exception)
+                                {
+                                    documentFileName = string.Empty;
 
-                                docId = PWMethods.aaApi_GetDocumentNumericProperty(1, i);
 
-                                Console.WriteLine("Processing Existing File: " + documentFileName);
-                                log.write("", "Processing Existing File: " + documentFileName);
+                                }
+                                if (!string.IsNullOrEmpty(documentFileName) && documentFileName.ToLower() == ofileName.ToLower())
+                                {
+                                    docId = PWMethods.aaApi_GetDocumentNumericProperty(1, i);
 
-                                //Change PW file State to Archived
-                                appMethods.ChangeWFState(docId, PWFolderId, 2, "Changed to Archived by CDE Automation");
+                                    Console.WriteLine("Processing Existing File: " + documentFileName);
+                                    log.write("", "Processing Existing File: " + documentFileName);
 
-                                //Create Revision
-                                appMethods.CreateDocRevision(PWFolderId, ofilePath, docId);
+                                    //Change PW file State to Archived
+                                    appMethods.ChangeWFState(docId, PWFolderId, 2, "Changed to Archived by CDE Automation");
 
-                                //Change PW file State to Shared
-                                appMethods.ChangeWFState(docId, PWFolderId, 1, "Changed to Shared by CDE Automation");
-                                created = true;
-                                break;
+                                    //Create Revision
+                                    appMethods.CreateDocRevision(PWFolderId, ofilePath, docId);
+
+                                    //Change PW file State to Shared
+                                    appMethods.ChangeWFState(docId, PWFolderId, 1, "Changed to Shared by CDE Automation");
+                                    created = true;
+                                    break;
+                                }
+
+                            }
+                            if (!created)
+                            {
+                                Console.WriteLine("Processing New File: " + ofileName);
+                                log.write("Info", "Processing New File: " + ofileName);
+
+                                appMethods.CreatPWDoc(PWFolderId, ofilePath, ofileName, oName);
+                                docId = appMethods.GetDocIdByFolderId(PWFolderId, oName);
+
                             }
                         }
-                        if (!created)
+                        else
                         {
                             Console.WriteLine("Processing New File: " + ofileName);
                             log.write("Info", "Processing New File: " + ofileName);
 
                             appMethods.CreatPWDoc(PWFolderId, ofilePath, ofileName, oName);
-                            //Fill docId
                             docId = appMethods.GetDocIdByFolderId(PWFolderId, oName);
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Processing New File: " + ofileName);
-                        log.write("Info", "Processing New File: " + ofileName);
-
-                        appMethods.CreatPWDoc(PWFolderId, ofilePath, ofileName, oName);
-                        //Fill docId
-                        docId = appMethods.GetDocIdByFolderId(PWFolderId, oName);
-                    }
 
 
 
-                    //Update Attribute from xls
-                    int colCount = PWMethods.aaApi_SelectColumnsByTable(TableId);
-                    int selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
-                    Console.WriteLine("Link rows selected: " + selectedRows);
-                rowExists:
-                    //Case document already has attributes in Env
-                    if (selectedRows > 0)
-                    {
-                        string attrnoValue = string.Empty;
-                        for (int i = 0; i < colCount; i++)
+                        //Update Attribute from xls
+                        int colCount = PWMethods.aaApi_SelectColumnsByTable(TableId);
+                        int selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
+                        Console.WriteLine("Link rows selected: " + selectedRows);
+                    rowExists:
+                        //Case document already has attributes in Env
+                        if (selectedRows > 0)
                         {
-                            string colName = Marshal.PtrToStringUni(PWMethods.aaApi_GetColumnStringProperty(9, i));
-                            //Console.WriteLine(colName);
-                            if (colName == "a_attrno")
+                            string attrnoValue = string.Empty;
+                            for (int i = 0; i < colCount; i++)
                             {
-                                attrnoValue = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, i));
-                                Console.WriteLine("a_attrno:" + attrnoValue);
+                                string colName = Marshal.PtrToStringUni(PWMethods.aaApi_GetColumnStringProperty(9, i));
+                                //Console.WriteLine(colName);
+                                if (colName == "a_attrno")
+                                {
+                                    attrnoValue = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, i));
+                                    Console.WriteLine("a_attrno:" + attrnoValue);
+                                }
+                            }
+
+                            if (xlsLoc != string.Empty)
+                            {
+                                try
+                                {
+                                    //read xls file
+                                    var excel = new LinqToExcel.ExcelQueryFactory();
+                                    excel.FileName = xlsLoc;
+                                    var docAttr = from x in excel.Worksheet()
+                                                  select x;
+                                    foreach (var xlrow in docAttr)
+                                    {
+                                        string NameInXls = xlrow["Name"].Value.ToString().ToUpper();
+                                        string NameInPW = oName.ToUpper();
+                                        //Console.WriteLine("PW: {0} - XLS: {1}",NameInPW,NameInXls);
+                                        int n = 0;
+                                        for (int i = 0; i < ColumnsList.Count; i++)
+                                        {
+                                            string colLabel = ColumnsList[i].LabelText;
+
+                                            string colValue = string.Empty;
+
+                                            try
+                                            {
+                                                colValue = xlrow[colLabel];
+                                            }
+                                            catch (Exception)
+                                            {
+
+                                                colValue = string.Empty;
+                                            }
+                                            if (colValue != string.Empty && NameInPW == NameInXls)//xlrow[colName]!="")
+                                            {
+                                                //log.write("Info", "Id: " + i + " - Column: " + colLabel + " - Vaule: " + colValue);
+                                                bool UpdateLinkData = PWMethods.aaApi_UpdateLinkDataColumnValue(TableId, ColumnsList[i].ColumnId, colValue);
+                                                Console.WriteLine("Update Link Data: {0} - Column: {1} - Id: {2} - Vaule: {3}", UpdateLinkData, colLabel, ColumnsList[i].ColumnId, colValue);
+                                                n++;
+                                            }
+                                        }
+
+                                        if (n != 0)
+                                        {
+                                            bool UpdateEnv = false;
+                                            try
+                                            {
+                                                UpdateEnv = PWMethods.aaApi_UpdateEnvAttr(TableId, int.Parse(attrnoValue));
+
+                                            }
+                                            catch (Exception)
+                                            {
+
+                                                continue;
+                                            }
+
+                                            if (UpdateEnv)
+                                            {
+                                                Console.WriteLine("{0} Attributes Updated", n);
+                                                log.write("Info", n + " Attributes Updated");
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("Couldn't Read Excel or Update attributes, Error is:");
+                                    Console.WriteLine(e.Message);
+
+                                    log.write("Error", "Couldn't Read Excel or Update attributes, Error is:");
+                                    log.write("Error", e.Message);
+                                    continue;
+                                }
+                            }
+                        }
+                        //Case no record in Env
+                        if (selectedRows == 0)
+                        {
+                            try
+                            {
+                                bool blankCreated = PWMethods.aaApi_CreateLinkDataAndLink(TableId, 1, PWFolderId, docId, 0, "", 1);
+                                Console.WriteLine("Blank Created?:" + blankCreated);
+                                selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
+                                goto rowExists;
+                            }
+                            catch (Exception e)
+                            {
+                                log.write("Error", "Case no record in Env");
+                                log.write("Error", e.Message);
+                                continue;
+                            }
+                        }
+                        //Reselect the Link data
+                        try
+                        {
+                            selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
+                        }
+                        catch (Exception e)
+                        {
+                            log.write("Error", "Reselect the Link data");
+                            log.write("Error", e.Message);
+                            continue;
+                        }
+
+                        //Prepare the email row
+                        if (docId != 0)
+                        {
+                            try
+                            {
+                                for (int x = 0; x < columns.Count; x++)
+                                {
+                                    emailColumn oneCol = new emailColumn();
+                                    oneCol.ColumnName = columns[x];
+                                    foreach (var m in ColumnsList)
+                                    {
+                                        if (m.LabelText == columns[x])
+                                        {
+                                            oneCol.ColumnId = m.ColumnId;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            oneCol.ColumnId = 0;
+                                        }
+                                    }
+                                    //Case env Attribute
+                                    if (oneCol.ColumnId > 0)
+                                    {
+                                        oneCol.ColumnVaule = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, oneCol.ColumnId - 1));
+                                    }
+                                    //Case General Attribute or missing column
+                                    if (oneCol.ColumnId == 0)
+                                    {
+                                        //int selectDocument = PWMethods.aaApi_SelectDocument(PWFolderId, docId);
+                                        //get value by column name
+                                        if (oneCol.ColumnName == "Name")
+                                        {
+                                            oneCol.ColumnVaule = oName;
+                                            oneCol.URL = pwPath + oName.Replace(" ", "&space;");
+                                        }
+                                        if (oneCol.ColumnName == "Sequence")
+                                        {
+                                            oneCol.ColumnVaule = PWMethods.aaApi_GetDocumentNumericProperty(2, 0).ToString();
+                                        }
+                                        if (oneCol.ColumnName == "File Updated")
+                                        {
+                                            oneCol.ColumnVaule = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(25, 0));
+                                        }
+                                        if (oneCol.ColumnName == "File Updated By")
+                                        {
+                                            int userId = PWMethods.aaApi_GetDocumentNumericProperty(37, 0);
+                                            int userSelectd = PWMethods.aaApi_SelectUser(userId);
+                                            if (userSelectd == 1)
+                                            {
+                                                oneCol.ColumnVaule = Marshal.PtrToStringUni(PWMethods.aaApi_GetUserStringProperty(2, 0));
+                                            }
+                                        }
+                                    }
+                                    //Console.WriteLine("ColId: {0} - Name: {1} - Vaule: {2}", oneCol.ColumnId, oneCol.ColumnName, oneCol.ColumnVaule);
+                                    emlColumns.Add(oneCol);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                log.write("Error", "Prepare the email row");
+                                log.write("Exception", e.Message);
+                                continue;
                             }
                         }
 
-                        if (xlsLoc != string.Empty)
+                        // copy to Z drive: - Overwrite
+                        if (myconfig.CopytoFileSystem)
                         {
-                            //read xls file
-                            var excel = new LinqToExcel.ExcelQueryFactory();
-                            excel.FileName = xlsLoc;
-                            var docAttr = from x in excel.Worksheet()
-                                          select x;
-                            foreach (var xlrow in docAttr)
+                            Console.WriteLine("Copying " + ofileName + " to folder: " + item.PDriveFolder);
+                            log.write("Info", "Copying " + ofileName + " to folder: " + item.PDriveFolder);
+
+                            try
                             {
-                                string NameInXls = xlrow["Name"].Value.ToString().ToUpper();
-                                string NameInPW = oName.ToUpper();
-                                //Console.WriteLine("PW: {0} - XLS: {1}",NameInPW,NameInXls);
-                                int n = 0;
-                                for (int i = 0; i < ColumnsList.Count; i++)
-                                {
-                                    string colLabel = ColumnsList[i].LabelText;
+                                System.IO.File.Copy(ofilePath, Path.Combine(item.PDriveFolder, ofileName), true);
 
-                                    string colValue = string.Empty;
+                            }
+                            catch (Exception ex)
+                            {
 
-                                    try
-                                    {
-                                        colValue = xlrow[colLabel];
-                                    }
-                                    catch (Exception)
-                                    {
-
-                                        colValue = string.Empty;
-                                    }
-                                    if (colValue != string.Empty && NameInPW == NameInXls)//xlrow[colName]!="")
-                                    {
-                                        //log.write("Info", "Id: " + i + " - Column: " + colLabel + " - Vaule: " + colValue);
-                                        bool UpdateLinkData = PWMethods.aaApi_UpdateLinkDataColumnValue(TableId, ColumnsList[i].ColumnId, colValue);
-                                        Console.WriteLine("Update Link Data: {0} - Column: {1} - Id: {2} - Vaule: {3}", UpdateLinkData, colLabel, ColumnsList[i].ColumnId, colValue);
-                                        n++;
-                                    }
-                                }
-
-                                if (n != 0)
-                                {
-                                    bool UpdateEnv = false;
-                                    try
-                                    {
-                                        UpdateEnv = PWMethods.aaApi_UpdateEnvAttr(TableId, int.Parse(attrnoValue));
-
-                                    }
-                                    catch (Exception)
-                                    {
-
-                                        continue;
-                                    }
-
-                                    if (UpdateEnv)
-                                    {
-                                        Console.WriteLine("{0} Attributes Updated", n);
-                                        log.write("Info", n + " Attributes Updated");
-                                        break;
-                                    }
-                                }
+                                log.write("Copy Exception", ex.Message);
+                                continue;
                             }
                         }
-                    }
-                    //Case no record in Env
-                    if (selectedRows == 0)
-                    {
-                        bool blankCreated = PWMethods.aaApi_CreateLinkDataAndLink(TableId, 1, PWFolderId, docId, 0, "", 1);
-                        Console.WriteLine("Blank Created?:" + blankCreated);
-                        selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
-                        goto rowExists;
-                    }
-                    //Reselect the Link data
-                    selectedRows = PWMethods.aaApi_SelectLinkDataByObject(TableId, 2, PWFolderId, docId, "", 0, 0, 0);
-
-                    //Prepare the email row
-                    if (docId != 0)
-                    {
-                        for (int x = 0; x < columns.Count; x++)
+                        //Delete/Move File/s from Folder in here or outside the loop
+                        try
                         {
-                            emailColumn oneCol = new emailColumn();
-                            oneCol.ColumnName = columns[x];
-                            foreach (var m in ColumnsList)
-                            {
-                                if (m.LabelText == columns[x])
-                                {
-                                    oneCol.ColumnId = m.ColumnId;
-                                    break;
-                                }
-                                else
-                                {
-                                    oneCol.ColumnId = 0;
-                                }
-                            }
-                            //Case env Attribute
-                            if (oneCol.ColumnId > 0)
-                            {
-                                oneCol.ColumnVaule = Marshal.PtrToStringUni(PWMethods.aaApi_GetLinkDataColumnValue(0, oneCol.ColumnId - 1));
-                            }
-                            //Case General Attribute or missing column
-                            if (oneCol.ColumnId == 0)
-                            {
-                                //int selectDocument = PWMethods.aaApi_SelectDocument(PWFolderId, docId);
-                                //get value by column name
-                                if (oneCol.ColumnName == "Name")
-                                {
-                                    oneCol.ColumnVaule = oName;
-                                    oneCol.URL = pwPath + oName.Replace(" ", "&space;");
-                                }
-                                if (oneCol.ColumnName == "Sequence")
-                                {
-                                    oneCol.ColumnVaule = PWMethods.aaApi_GetDocumentNumericProperty(2, 0).ToString();
-                                }
-                                if (oneCol.ColumnName == "File Updated")
-                                {
-                                    oneCol.ColumnVaule = Marshal.PtrToStringUni(PWMethods.aaApi_GetDocumentStringProperty(25, 0));
-                                }
-                                if (oneCol.ColumnName == "File Updated By")
-                                {
-                                    int userId = PWMethods.aaApi_GetDocumentNumericProperty(37, 0);
-                                    int userSelectd = PWMethods.aaApi_SelectUser(userId);
-                                    if (userSelectd == 1)
-                                    {
-                                        oneCol.ColumnVaule = Marshal.PtrToStringUni(PWMethods.aaApi_GetUserStringProperty(2, 0));
-                                    }
-                                }
-                            }
-                            Console.WriteLine("ColId: {0} - Name: {1} - Vaule: {2}", oneCol.ColumnId, oneCol.ColumnName, oneCol.ColumnVaule);
-                            emlColumns.Add(oneCol);
+                            File.Delete(Path.Combine(item.stagingfolder, ofileName));
+                        }
+                        catch (Exception ex)
+                        {
+                            log.write("Delete Exception", ex.Message);
+                            continue;
                         }
                     }
-
-                    // copy to Z drive: - Overwrite
-                    if (myconfig.CopytoFileSystem)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Copying " + ofileName + " to folder: " + item.PDriveFolder);
-                        log.write("", "Copying " + ofileName + " to folder: " + item.PDriveFolder);
-
-                        System.IO.File.Copy(ofilePath, Path.Combine(item.PDriveFolder, ofileName), true);
+                        log.write("Error", e.Message);
+                        continue;
                     }
-                    //Delete/Move File/s from Folder in here or outside the loop
-                    File.Delete(Path.Combine(item.stagingfolder, ofileName));
                 }
             }
 
             // Notify Users 
             if (myconfig.SendNotification)
             {
-                appMethods.SendMail2(emlColumns, columns.Count);
+                if (emlColumns.Count > 0)
+                {
+                    appMethods.SendMail2(emlColumns, columns.Count);
+                }
+                
             }
+
         }
-    
+
 
         public static int GetDocIdByFolderId(int PWFolderId, String oName)
         {
@@ -415,7 +541,7 @@ namespace CDEAutomation
         public static void SendMail2(List<emailColumn> docList, int NuCols)
         {
             string body;
-            body = "The following files located in ProjectWise are issued for your action/information. Click on File Number to access files.";
+            body = "The following files located in ProjectWise are issued for your action/information. Click on Name to access files.";
             body = body + "<br/><br/>";
             body = body + @"<table border=""1"">" +
                             @"<tr style=""background-color:blue; color:white"">";
@@ -494,10 +620,57 @@ namespace CDEAutomation
             }
             catch (Exception)
             {
-
                 log.write("Failed", "Couldn't send email");
             }
 
+        }
+
+        public static bool ValidateStates(int PWFolderId)
+        {
+            bool Validated = false;
+            wfObject myWF = new wfObject(); //set an object to be used in WF state change
+            wfObject WFObj = xmlHelper.getWFConfigs(); //get what stored in xml
+
+            int wfCount = PWMethods.aaApi_SelectWorkflowsForProject(PWFolderId);
+            //Console.WriteLine("Number of WF: " + wfCount);
+
+            for (int i = 0; i < wfCount; i++)
+            {
+                myWF.WorkflowName = Marshal.PtrToStringUni(PWMethods.aaApi_GetWorkflowStringProperty(3, i));
+                if (myWF.WorkflowName == WFObj.WorkflowName)
+                {
+                    myWF.WorkflowId = PWMethods.aaApi_GetWorkflowNumericProperty(1, i);
+                    //Console.WriteLine("WF Id is: " + myWF.WorkflowId);
+                }
+
+            }
+
+            int stCount = PWMethods.aaApi_SelectStatesByWorkflow(myWF.WorkflowId);
+            //Console.WriteLine("Number of States is: " + stCount);
+
+
+            for (int i = 0; i < stCount; i++)
+            {
+                myWF.StateName = Marshal.PtrToStringUni(PWMethods.aaApi_GetStateStringProperty(2, i));
+                if (myWF.StateName == WFObj.SharedStateName)
+                {
+                    myWF.StateOneId = PWMethods.aaApi_GetStateNumericProperty(1, i);
+                }
+                if (myWF.StateName == WFObj.ArchivedStateName)
+                {
+                    myWF.StateTwoId = PWMethods.aaApi_GetStateNumericProperty(1, i);
+                }
+            }
+
+            //Console.WriteLine("Shared state id is: " + myWF.StateOneId);
+            //Console.WriteLine("Archived states id is: " + myWF.StateTwoId);
+
+            if (myWF.StateOneId >0 && myWF.StateTwoId >0 )
+            {
+                Validated = true;
+            }
+            
+            return Validated;
         }
 
         /// <summary>
